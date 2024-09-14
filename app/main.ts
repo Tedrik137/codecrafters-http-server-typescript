@@ -29,7 +29,7 @@ const server = net.createServer((socket) => {
                 socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\n\r\n`)
             }
             else {
-                socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${term.length}\r\n`)
+                socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${term.length}\r\n\r\n`)
             }
         }
         else if (path === `/files/${term}`) {
