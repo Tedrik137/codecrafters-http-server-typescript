@@ -14,10 +14,12 @@ const server = net.createServer((socket) => {
             socket.write('HTTP/1.1 200 OK\r\n\r\n')
         }
         else if (path === '/user-agent') {
-            const userAgentHeader = req.split(' ')[3]
-            console.log(userAgentHeader)
+            const headers = req.split('\r\n')[2]
+            const userAgent = headers.split(': ')
+            console.log(headers)
+            console.log(userAgent)
             // const userAgent = userAgentHeader.split(': ')[1]
-            socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgent.length}\r\n\r\n${userAgent}`)
+            // socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgent.length}\r\n\r\n${userAgent}`)
         }
         else if (path === `/echo/${term}`) {
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${term.length}\r\n\r\n${term}`)
