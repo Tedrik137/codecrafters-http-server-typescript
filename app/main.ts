@@ -1,4 +1,5 @@
 import * as net from "net";
+import { open } from "fs/promises"
 
 // You can use print statements as follows for debugging, they'll be visible when running tests.
 console.log("Logs from your program will appear here!");
@@ -21,6 +22,19 @@ const server = net.createServer((socket) => {
         }
         else if (path === `/echo/${term}`) {
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${term.length}\r\n\r\n${term}`)
+        }
+        else if (path === `/files/${term}`) {
+            open(term, 'r').then((fileHandle) => {
+                fileHandle.read().then((res) => {
+                    const buffer = res.buffer
+                    const output =  buffer.toString()
+                    socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${output.length}\r\n\r\n${output}`)
+                }).catch(() => {
+                    socket.write('HTTP/1.1 404 Not Found\r\n\r\n')
+                })
+            }).catch((e) => {
+                socket.write('HTTP/1.1 404 Not Found\r\n\r\n')
+            })
         }
         else {
             socket.write('HTTP/1.1 404 Not Found\r\n\r\n')
