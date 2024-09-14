@@ -1,5 +1,6 @@
 import * as net from "net";
 import { readFileSync, writeFileSync } from "fs"
+import { gzipSync } from "zlib";
 
 // You can use print statements as follows for debugging, they'll be visible when running tests.
 console.log("Logs from your program will appear here!");
@@ -28,7 +29,8 @@ const server = net.createServer((socket) => {
             if (prop === 'Accept-Encoding') {
                 const encodings = encoding.split(', ')
                 if (encodings.includes('gzip')) {
-                    socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\n\r\n`)
+                    const compressed = gzipSync(term)
+                    socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\nContent-Length: ${compressed.length}\r\n\r\n${compressed}`)
                 }
                 else {
                     socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n`)
