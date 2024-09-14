@@ -23,7 +23,7 @@ const server = net.createServer((socket) => {
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgent.length}\r\n\r\n${userAgent}`)
         }
         else if (path === `/echo/${term}`) {
-            console.log(req.split(' '))
+            console.log(req.split('\r\n'))
             const header = req.split('\r\n')[1]
             if (header === 'gzip') {
                 socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\n\r\n`)
