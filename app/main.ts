@@ -11,7 +11,12 @@ const server = net.createServer((socket) => {
 
         let str = path.split('/')[2]
 
-        socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${str.length}\r\n\r\n${str}`)
+        if (!str) {
+            socket.write('HTTP/1.1 404 Not Found\r\n\r\n')
+        }
+        else {
+            socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${str.length}\r\n\r\n${str}`)
+        }
 
     })
 
