@@ -24,13 +24,19 @@ const server = net.createServer((socket) => {
         }
         else if (path === `/echo/${term}`) {
             const header = req.split('\r\n')[2]
-            const encoding = header.split(": ")[1]
-            if (encoding === 'gzip') {
-                socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\n\r\n`)
+            const [prop, encoding] = header.split(": ")
+            if (prop === 'Accept-Encoding') {
+                if (encoding === 'gzip') {
+                    socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\n\r\n`)
+                }
+                else {
+                    socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n`)
+                }
             }
             else {
-                socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${term.length}\r\n\r\n`)
+                socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${term.length}\r\n\r\n${term}`) 
             }
+            
         }
         else if (path === `/files/${term}`) {
             const filePath = process.argv[3]
