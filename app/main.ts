@@ -1,5 +1,5 @@
 import * as net from "net";
-import { readFileSync } from "fs"
+import { readFileSync, writeFileSync } from "fs"
 
 // You can use print statements as follows for debugging, they'll be visible when running tests.
 console.log("Logs from your program will appear here!");
@@ -8,9 +8,11 @@ console.log("Logs from your program will appear here!");
 const server = net.createServer((socket) => {
     socket.on('data', (data) => {
         let req = data.toString()
+        const method = req.split(' ')[0]
         const path = req.split(' ')[1]
         const term = path.split('/')[2]
         
+       
         if (path === '/') {
             socket.write('HTTP/1.1 200 OK\r\n\r\n')
         }
@@ -27,19 +29,34 @@ const server = net.createServer((socket) => {
             const filePath = process.argv[3]
             const absFilePath = filePath + term
 
-            try {
-                const buffer = readFileSync(absFilePath);
-                socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${buffer.length}\r\n\r\n${buffer}`)
-                
+            if (method === 'GET') {
+                try {
+                    const buffer = readFileSync(absFilePath);
+                    socket.write(`HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${buffer.length}\r\n\r\n${buffer}`)
+                    
+                }
+                catch (e) {
+                    socket.write('HTTP/1.1 404 Not Found\r\n\r\n')
+                }
             }
-            catch (e) {
-                socket.write('HTTP/1.1 404 Not Found\r\n\r\n')
+            else if (method === 'POST') {
+                const body = req.split('\r\n')[7]
+                try {
+                    writeFileSync(absFilePath, body)
+                    socket.write('HTTP/1.1 201 Created\r\n\r\n')
+                }
+                catch (e) {
+                    socket.write('HTTP/1.1 500 Internal Server Error\r\n\r\n')
+                }
             }
+
+            
         }
         else {
             socket.write('HTTP/1.1 404 Not Found\r\n\r\n')
         }
     })
+
 
     socket.on("close", () => {
         socket.end();
