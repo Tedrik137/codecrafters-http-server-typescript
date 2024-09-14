@@ -9,12 +9,10 @@ const server = net.createServer((socket) => {
         let req = data.toString()
         const path = req.split(' ')[1]
 
-        if (path != '/') {
-            socket.write('HTTP/1.1 404 Not Found\r\n\r\n')
-        }
-        else {
-            socket.write('HTTP/1.1 200 OK\r\n\r\n')
-        }
+        let str = path.split('/')[1]
+
+        socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${str.length}\r\n\r\n${str}`)
+
     })
 
     socket.on("close", () => {
