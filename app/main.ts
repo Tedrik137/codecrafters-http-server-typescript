@@ -23,7 +23,13 @@ const server = net.createServer((socket) => {
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgent.length}\r\n\r\n${userAgent}`)
         }
         else if (path === `/echo/${term}`) {
-            socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${term.length}\r\n\r\n${term}`)
+            const header = req.split('\r\n')[1]
+            if (header === 'gzip') {
+                socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\n\r\n`)
+            }
+            else {
+                socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n`)
+            }
         }
         else if (path === `/files/${term}`) {
             const filePath = process.argv[3]
@@ -49,8 +55,6 @@ const server = net.createServer((socket) => {
                     socket.write('HTTP/1.1 500 Internal Server Error\r\n\r\n')
                 }
             }
-
-            
         }
         else {
             socket.write('HTTP/1.1 404 Not Found\r\n\r\n')
