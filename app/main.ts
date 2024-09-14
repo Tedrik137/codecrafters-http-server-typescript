@@ -24,7 +24,7 @@ const server = net.createServer((socket) => {
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${term.length}\r\n\r\n${term}`)
         }
         else if (path === `/files/${term}`) {
-            const filePath = process.argv[2]
+            const filePath = process.argv[3]
             console.log(filePath)
             const absFilePath = filePath + term
             console.log(absFilePath)
