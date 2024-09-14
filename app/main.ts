@@ -32,8 +32,8 @@ const server = net.createServer((socket) => {
                     const compressed = gzipSync(term)
                     console.log(compressed)
 
-                    socket.write(`HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\nContent-Type: text/plain\r\nContent-Length: ${compressed.length}\r\n\r\n${compressed}`)
-                }
+                    socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\nContent-Length: ${compressed.length}\r\n\r\n`);
+                    socket.write(compressed);                }
                 else {
                     socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n`)
                 }
