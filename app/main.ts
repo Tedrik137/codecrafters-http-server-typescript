@@ -25,9 +25,7 @@ const server = net.createServer((socket) => {
         }
         else if (path === `/files/${term}`) {
             const filePath = process.argv[3]
-            console.log(filePath)
             const absFilePath = filePath + term
-            console.log(absFilePath)
 
             try {
                 const buffer = readFileSync(absFilePath);
