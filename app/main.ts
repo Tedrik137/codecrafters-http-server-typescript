@@ -10,10 +10,10 @@ const server = net.createServer((socket) => {
         const path = req.split(' ')[1]
         const term = path.split('/')[2]
         
-        if (path == '/') {
+        if (path === '/') {
             socket.write('HTTP/1.1 200 OK\r\n\r\n')
         }
-        else if (path == `/echo${term}`) {
+        else if (path === `/echo${term}`) {
             socket.write(`HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${term.length}\r\n\r\n${term}`)
         }
         else {
