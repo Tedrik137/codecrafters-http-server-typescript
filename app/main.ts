@@ -40,10 +40,7 @@ const server = net.createServer((socket) => {
                 }
             }
             else if (method === 'POST') {
-                const arr = req.split('\r\n')
-                console.log(arr)
                 const body = req.split('\r\n')[5]
-                console.log(body)
                 try {
                     writeFileSync(absFilePath, body)
                     socket.write('HTTP/1.1 201 Created\r\n\r\n')
