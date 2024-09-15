@@ -25,6 +25,7 @@ const readHeaders = (data: Buffer) => {
 
     for (const headerStr in headers) {
         const [header, value] = headerStr.split(': ')
+        console.log(header, value)
         headersObj[header] = value
     }
 
