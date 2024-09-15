@@ -1,87 +1,19 @@
 import * as net from "net";
 import { readFileSync, writeFileSync } from "fs"
 import { gzipSync } from "zlib";
+import HttpResponseBuilder from "./utils/responseBuilder";
+import RequestReader from "./utils/requestReader";
 
 // You can use print statements as follows for debugging, they'll be visible when running tests.
 console.log("Logs from your program will appear here!");
 
-type Headers = {[key: string]: string}
-
-const readReq = (data: Buffer) => {
-    let req = data.toString()
-    const lines = req.split('\r\n')
-    const [method, path] = lines[0].split(' ')
-    const term = path.split('/')[2]
-    return [method, path, term]
-}
-
-const readHeaders = (data: Buffer) => {
-    let req = data.toString()
-    const lines = req.split('\r\n')
-    const headers = lines.slice(1, lines.length - 1)
-    const headersObj: Headers = {}
-
-    for (const headerStr of headers) {
-        const [header, value] = headerStr.split(': ')
-        headersObj[header] = value
-    }
-
-    return headersObj
-}
-
-const readBody = (data: Buffer) => {
-    let req = data.toString()
-    const lines = req.split('\r\n')
-    const body = lines[lines.length - 1]
-    return body
-}
-
-class HttpResponseBuilder {
-    version: string;
-    status: string;
-    headers: string;
-    body: Buffer;
-
-    constructor() {
-        this.version = 'HTTP/1.1';
-        this.status = ''
-        this.body = Buffer.from('');
-        this.headers = ''
-    }
-
-    buildResponse() {
-        return `${this.version} ${this.status}\r\n${this.headers}\r\n${this.body}`
-    }
-
-    setVersion(version: string) {
-        this.version = version
-        return this
-    }
-
-    setStatus(status: string) {
-        this.status = status
-        return this
-    }
-
-    setHeaders(headers: Headers) {
-        for (const header in headers) {
-            this.headers += `${header}: ${headers[header]}\r\n`
-        }
-        return this
-    }
-
-    setBody(body: Buffer) {
-        this.body = body
-        return this
-    }
-}
-
 // Uncomment this to pass the first stage
 const server = net.createServer((socket) => {
     socket.on('data', (data) => {
+        const requestReader = new RequestReader(data)
         const httpResponseBuilder = new HttpResponseBuilder();
-        const [method, path, term] = readReq(data)
-        const headers = readHeaders(data)
+        const [method, path, term] = requestReader.readReq(data)
+        const headers = requestReader.readHeaders(data)
         
         if (path === '/') {
             const response = httpResponseBuilder.setStatus('200 OK').buildResponse()
@@ -147,7 +79,7 @@ const server = net.createServer((socket) => {
                 }
             }
             else if (method === 'POST') {
-                const body = readBody(data)
+                const body = requestReader.readBody(data)
                 try {
                     writeFileSync(absFilePath, body)
                     const httpResponse = httpResponseBuilder.setStatus('201 Created')
