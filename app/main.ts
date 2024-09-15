@@ -83,6 +83,8 @@ const server = net.createServer((socket) => {
     socket.on('data', (data) => {
         const [method, path, term] = readReq(data)
         const headers = readHeaders(data)
+        console.log(method, path, term)
+        console.log(headers)
         
         if (path === '/') {
             const response = httpResponseBuilder.setStatus('200 OK').buildResponse()
@@ -98,8 +100,10 @@ const server = net.createServer((socket) => {
         }
         else if (path === `/echo/${term}`) {
             const encodingsObj = headers['Accept-Encoding']
+            console.log(encodingsObj)
             if (encodingsObj) {
                 const encodings = encodingsObj.split(', ')
+                console.log(encodings)
                 if (encodings.includes('gzip')) {
                     const compressed = gzipSync(term)
                     
