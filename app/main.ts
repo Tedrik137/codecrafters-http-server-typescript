@@ -76,11 +76,10 @@ class HttpResponseBuilder {
     }
 }
 
-const httpResponseBuilder = new HttpResponseBuilder();
-
 // Uncomment this to pass the first stage
 const server = net.createServer((socket) => {
     socket.on('data', (data) => {
+        const httpResponseBuilder = new HttpResponseBuilder();
         const [method, path, term] = readReq(data)
         const headers = readHeaders(data)
         
@@ -115,7 +114,6 @@ const server = net.createServer((socket) => {
                     .setHeaders({'Content-Type': 'text/plain', 'Content-Length': `${term.length}`})
                     .setBody(Buffer.from(term))
                     .buildResponse()
-                    console.log(httpResponse)
                     socket.write(httpResponse)
                 }
             }
