@@ -18,13 +18,12 @@ const readReq = (data: Buffer) => {
 const readHeaders = (data: Buffer) => {
     let req = data.toString()
     const lines = req.split('\r\n')
-    console.log(lines)
     const headers = lines.slice(1, lines.length - 1)
-    console.log(headers)
     const headersObj: Headers = {}
 
-    for (const headerStr in headers) {
-        console.log(headerStr)
+    for (const headerStr of headers) {
+        const [header, value] = headerStr.split(': ')
+        headersObj[header] = value
     }
 
     return headersObj
