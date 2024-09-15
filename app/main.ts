@@ -115,6 +115,7 @@ const server = net.createServer((socket) => {
                     .setHeaders({'Content-Type': 'text/plain', 'Content-Length': `${term.length}`})
                     .setBody(Buffer.from(term))
                     .buildResponse()
+                    console.log(httpResponse)
                     socket.write(httpResponse)
                 }
             }
